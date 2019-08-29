@@ -43,6 +43,14 @@ contract Tracker {
         address indexed _participant
     );
 
+    event StepAdded(
+        address indexed _participant,
+        bytes32 indexed _uuid,
+        uint256 _count,
+        bytes32 _action,
+        bytes32 _timestamp
+    );
+
 
     /* Modifiers */
 
@@ -50,6 +58,14 @@ contract Tracker {
         require(
             msg.sender == producer,
             "msg.sender is not producer"
+        );
+        _;
+    }
+
+    modifier canParticipate() {
+        require(
+            isParticipant[msg.sender] || msg.sender == producer,
+            "msg.sender cannot participate"
         );
         _;
     }
@@ -109,6 +125,7 @@ contract Tracker {
         bytes32 _timestamp
     )
         public
+        canParticipate
     {
         Track storage track = tracks[_uuid];
 
@@ -128,6 +145,14 @@ contract Tracker {
         track.count++;
         track.steps.push(
             Step(msg.sender, _action, _timestamp)
+        );
+
+        emit StepAdded(
+            msg.sender,
+            _uuid,
+            track.count,
+            _action,
+            _timestamp
         );
     }
 

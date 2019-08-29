@@ -4,7 +4,7 @@ const Tracker = artifacts.require('Tracker');
 
 contract('Tracker::addStep', async () => {
     contract('Negative Tests', async () => {
-        it('Reverts if _uuid is empty and msg.sender is not producer', async () => {
+        it('Reverts if msg.sender cannot participate', async () => {
             let reason;
 
             const accounts = await web3.eth.getAccounts();
@@ -19,6 +19,45 @@ contract('Tracker::addStep', async () => {
                     web3.utils.utf8ToHex(''),
                     action,
                     timestamp,
+                );
+            }
+            catch (error) {
+                reason = error.reason;
+            }
+
+            assert.strictEqual(
+                reason,
+                "msg.sender cannot participate",
+            );
+        });
+
+        it('Reverts if _uuid is empty and msg.sender is not producer', async () => {
+            let reason;
+
+            const accounts = await web3.eth.getAccounts();
+            const producer = accounts[1];
+            const packer = accounts[2];
+            const action = web3.utils.utf8ToHex('FISH_CAUGHT');
+            const timestamp = web3.utils.utf8ToHex('2016-06-03T03:56:39Z');
+
+            const tracker = await Tracker.new(producer);
+
+            // Producer adds packer as a participant
+            await tracker.addParticipant(
+                packer,
+                {
+                    from: producer,
+                },
+            );
+
+            try {
+                await tracker.addStep(
+                    web3.utils.utf8ToHex(''),
+                    action,
+                    timestamp,
+                    {
+                        from: packer,
+                    },
                 );
             }
             catch (error) {
@@ -165,7 +204,15 @@ contract('Tracker::addStep', async () => {
             action = web3.utils.padRight(unpaddedAction, 64);
             timestamp = web3.utils.padRight(unpaddedTimestamp, 64);
 
-            // A different participant adds a step later
+            // Producer adds packer as a participant
+            await tracker.addParticipant(
+                packer,
+                {
+                    from: producer,
+                },
+            );
+
+            // Packer adds a step later
             await tracker.addStep(
                 uuid,
                 action,
