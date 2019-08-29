@@ -30,9 +30,29 @@ contract Tracker {
     /** Address for producer, from whom trackables originate. */
     address public producer;
 
+    /** Flags whether an address is a participant. */
+    mapping(address => bool) public isParticipant;
+
     /** Maps UUIDs to tracks. */
     mapping(bytes32 => Track) public tracks;
 
+
+    /* Events */
+
+    event ParticipantAdded(
+        address indexed _participant
+    );
+
+
+    /* Modifiers */
+
+    modifier onlyProducer() {
+        require(
+            msg.sender == producer,
+            "msg.sender is not producer"
+        );
+        _;
+    }
 
     /* Constructor */
 
@@ -50,6 +70,30 @@ contract Tracker {
         );
 
         producer = _producer;
+    }
+
+
+    /* External Functions */
+
+    /**
+     * @dev Adds participant.
+     *
+     * @param _participant Address of non-producer participant
+     */
+    function addParticipant(
+        address _participant
+    )
+        public
+        onlyProducer
+    {
+        require(
+            address(_participant) != address(0),
+            "_participant is zero"
+        );
+
+        isParticipant[_participant] = true;
+
+        emit ParticipantAdded(_participant);
     }
 
     /**
