@@ -83,4 +83,28 @@ contract Tracker {
             Step(_action, _timestamp)
         );
     }
+
+    /**
+     * @dev Gets step from a track.
+     *
+     * @param _uuid UUID of the trackable
+     * @param _index Index of step
+     *
+     * @return action_ and timestamp_ for step
+     */
+    function getStep(
+        bytes32 _uuid,
+        uint256 _index
+    )
+        public
+        view
+        returns (bytes32 action_, bytes32 timestamp_)
+    {
+        Step memory step = tracks[_uuid].steps[_index];
+
+        return(
+            step.action,
+            step.timestamp
+        );
+    }
 }
