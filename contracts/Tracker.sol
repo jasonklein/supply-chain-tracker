@@ -64,9 +64,11 @@ contract Tracker {
     )
         public
     {
+        Track storage track = tracks[_uuid];
+
         require(
-            _uuid != '',
-            "_uuid is empty"
+            track.count != 0 || msg.sender == producer,
+            "_uuid does not exist"
         );
         require(
             _action != '',
@@ -77,7 +79,6 @@ contract Tracker {
             "_timestamp is empty"
         );
 
-        Track storage track = tracks[_uuid];
         track.count++;
         track.steps.push(
             Step(_action, _timestamp)
