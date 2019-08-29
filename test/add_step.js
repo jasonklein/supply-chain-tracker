@@ -146,6 +146,10 @@ contract('Tracker::addStep', async () => {
             );
 
             assert.strictEqual(
+                step.participant_,
+                producer,
+            );
+            assert.strictEqual(
                 step.action_,
                 action,
             );
@@ -185,6 +189,10 @@ contract('Tracker::addStep', async () => {
                 (count - 1),
             );
 
+            assert.strictEqual(
+                step.participant_,
+                packer,
+            );
             assert.strictEqual(
                 step.action_,
                 action,

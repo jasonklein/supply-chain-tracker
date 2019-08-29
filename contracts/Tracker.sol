@@ -11,8 +11,9 @@ contract Tracker {
 
     /* Structs */
 
-    /** Consists of an action and the timestamp of that action was taken. */
+    /** Consists of a participant, an action, and the timestamp of that action was taken. */
     struct Step {
+        address participant;
         bytes32 action;
         bytes32 timestamp;
     }
@@ -31,6 +32,7 @@ contract Tracker {
 
     /** Maps UUIDs to tracks. */
     mapping(bytes32 => Track) public tracks;
+
 
     /* Constructor */
 
@@ -81,7 +83,7 @@ contract Tracker {
 
         track.count++;
         track.steps.push(
-            Step(_action, _timestamp)
+            Step(msg.sender, _action, _timestamp)
         );
     }
 
@@ -99,11 +101,16 @@ contract Tracker {
     )
         public
         view
-        returns (bytes32 action_, bytes32 timestamp_)
+        returns(
+            address participant_,
+            bytes32 action_,
+            bytes32 timestamp_
+        )
     {
         Step memory step = tracks[_uuid].steps[_index];
 
         return(
+            step.participant,
             step.action,
             step.timestamp
         );
