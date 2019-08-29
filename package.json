@@ -1,0 +1,13 @@
+{
+  "name": "fish-tracker",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "test": "truffle test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "truffle": "^5.0.33"
+  }
+}
